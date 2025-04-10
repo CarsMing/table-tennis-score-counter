@@ -1,0 +1,94 @@
+.table-tennis-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+}
+
+.table-illustration {
+  position: relative;
+  width: 400px;
+  height: 300px;
+}
+
+.table {
+  position: absolute;
+  width: 300px;
+  height: 180px;
+  background-color: #66b3ff;
+  border: 4px solid white;
+  border-radius: 10px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.net {
+  position: absolute;
+  width: 2px;
+  height: 180px;
+  background-color: white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.player-marker {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: transform 0.3s, box-shadow 0.3s, top 0.5s;
+}
+
+.serving {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px 3px rgba(255, 215, 0, 0.7);
+  z-index: 10;
+}
+
+.team-a-player {
+  left: 10px;
+}
+
+.team-a-player-1 {
+  background-color: #dc3545;
+}
+
+.team-a-player-2 {
+  background-color: #e57373;
+}
+
+.team-b-player {
+  right: 10px;
+}
+
+.team-b-player-1 {
+  background-color: #28a745;
+}
+
+.team-b-player-2 {
+  background-color: #81c784;
+}
+
+.top {
+  top: 100px;
+}
+
+.bottom {
+  top: 160px;
+}
+
+.table-illustration-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+}

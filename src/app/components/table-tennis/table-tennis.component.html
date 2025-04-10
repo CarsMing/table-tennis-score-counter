@@ -1,0 +1,38 @@
+<div class="table-tennis-container">
+  <div class="table-illustration">
+    <div class="table"></div>
+    <div class="net"></div>
+    
+    <!-- Team A Players -->
+    <div 
+      class="player-marker team-a-player team-a-player-1" 
+      [class.serving]="gameService.isPlayerServing('A', 1)" 
+      [ngClass]="gameService.getPlayerPositionClass('A', 1)"
+    >
+      {{ gameService.getInitials(gameService.teamAPlayers[0].name) }}
+    </div>
+    <div 
+      class="player-marker team-a-player team-a-player-2" 
+      [class.serving]="gameService.isPlayerServing('A', 2)" 
+      [ngClass]="gameService.getPlayerPositionClass('A', 2)"
+    >
+      {{ gameService.getInitials(gameService.teamAPlayers[1].name) }}
+    </div>
+    
+    <!-- Team B Players -->
+    <div 
+      class="player-marker team-b-player team-b-player-1" 
+      [class.serving]="gameService.isPlayerServing('B', 1)" 
+      [ngClass]="gameService.getPlayerPositionClass('B', 1)"
+    >
+      {{ gameService.getInitials(gameService.teamBPlayers[0].name) }}
+    </div>
+    <div 
+      class="player-marker team-b-player team-b-player-2" 
+      [class.serving]="gameService.isPlayerServing('B', 2)" 
+      [ngClass]="gameService.getPlayerPositionClass('B', 2)"
+    >
+      {{ gameService.getInitials(gameService.teamBPlayers[1].name) }}
+    </div>
+  </div>
+</div>
