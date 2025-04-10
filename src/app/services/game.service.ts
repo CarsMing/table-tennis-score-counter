@@ -49,6 +49,9 @@ export class GameService {
     // Subscribe to score changes to update game status
     this.teamAScore$.subscribe(() => this.updateGameStatus());
     this.teamBScore$.subscribe(() => this.updateGameStatus());
+
+    this.teamAScoreSource.next(10);
+    this.teamBScoreSource.next(10);
   }
 
   // Getter methods for current values
@@ -103,12 +106,9 @@ export class GameService {
     
     if (this.isDeuceMode) {
       // In deuce mode, service alternates between teams each point
-      // But the same player serves when their team gets to serve
-      if (this.currentServingTeam === 'A') {
-        return this.teamAScore % 2 === 0 ? 2 : 1;
-      } else {
-        return this.teamBScore % 2 === 0 ? 2 : 1;
-      }
+      
+        return Math.floor(totalScore / 2) % 2 === 0 ? 2 : 1;
+      
     } else {
       // In regular play, players alternate every 2 points
         return Math.floor(totalScore / 4) % 2 === 0 ? 1 : 2;
@@ -123,7 +123,10 @@ export class GameService {
     // Calculate if positions are swapped
     if (this.isDeuceMode) {
       // In deuce, positions switch with every team change, which is every point
-      return (Math.floor((totalScore)) % 4) >= 2 ? basePositions : [basePositions[1], basePositions[0]];
+      console.log('deuce mode - team A');
+      console.log(totalScore);
+      console.log(Math.floor((totalScore)) % 4);
+      return (Math.floor(totalScore + 1) % 4) >= 2 ? basePositions : [basePositions[1], basePositions[0]];
     } else {
       // In regular play, positions switch with each service change (every 2 points)
       return (Math.floor((totalScore+2) / 4) % 2) === 0 ? basePositions : [basePositions[1], basePositions[0]];
@@ -142,7 +145,10 @@ export class GameService {
     // Calculate if positions are swapped
     if (this.isDeuceMode) {
       // In deuce, positions switch with every team change, which is every point
-      return (Math.floor(totalScore + 1) % 4) >= 2 ? basePositions : [basePositions[1], basePositions[0]];
+      console.log('deuce mode - team B');
+      console.log(totalScore);
+      console.log(Math.floor(totalScore) % 4);
+      return (Math.floor(totalScore) % 4) < 2 ? [basePositions[1], basePositions[0]] : basePositions;
     } else {
       // In regular play, positions switch with each service change (every 2 points)
       return (Math.floor(totalScore / 4) % 2) === 0 ? basePositions : [basePositions[1], basePositions[0]];
