@@ -17,13 +17,13 @@ export class GameService {
   
   // Player data using arrays with default values
   private teamAPlayersSource = new BehaviorSubject<Player[]>([
-    { name: 'Sven Langehaneberg', editing: false, editName: 'Sven Langehaneberg' },
+    { name: 'Sven Lange', editing: false, editName: 'Sven Lange' },
     { name: 'Carsten Minga', editing: false, editName: 'Carsten Minga' }
   ]);
   
   private teamBPlayersSource = new BehaviorSubject<Player[]>([
     { name: 'Niklas Rudde', editing: false, editName: 'Niklas Rudde' },
-    { name: 'Markus Doedt', editing: false, editName: 'Markus Doedt' }
+    { name: 'Timo Kruse', editing: false, editName: 'Timo Kruse' }
   ]);
   
   // Game state variables for table tennis rules
@@ -118,19 +118,15 @@ export class GameService {
   // Get positions of team A players based on total score
   get teamAPositions(): string[] {
     const totalScore = this.teamAScore + this.teamBScore;
-    // Positions switch after each service change, which happens every 2 points in regular play
-    // and every point in deuce mode
-    
-    // Starting positions
-    const basePositions = ['top', 'bottom'];
+    const basePositions = ['bottom', 'top'];
     
     // Calculate if positions are swapped
     if (this.isDeuceMode) {
       // In deuce, positions switch with every team change, which is every point
-      return (Math.floor(totalScore / 1) % 4) < 2 ? basePositions : [basePositions[1], basePositions[0]];
+      return (Math.floor((totalScore)) % 4) >= 2 ? basePositions : [basePositions[1], basePositions[0]];
     } else {
       // In regular play, positions switch with each service change (every 2 points)
-      return (Math.floor(totalScore / 2) % 2) === 0 ? basePositions : [basePositions[1], basePositions[0]];
+      return (Math.floor((totalScore+2) / 4) % 2) === 0 ? basePositions : [basePositions[1], basePositions[0]];
     }
   }
 
@@ -146,10 +142,10 @@ export class GameService {
     // Calculate if positions are swapped
     if (this.isDeuceMode) {
       // In deuce, positions switch with every team change, which is every point
-      return (Math.floor(totalScore / 1) % 4) < 2 ? basePositions : [basePositions[1], basePositions[0]];
+      return (Math.floor(totalScore + 1) % 4) >= 2 ? basePositions : [basePositions[1], basePositions[0]];
     } else {
       // In regular play, positions switch with each service change (every 2 points)
-      return (Math.floor(totalScore / 2) % 2) === 0 ? basePositions : [basePositions[1], basePositions[0]];
+      return (Math.floor(totalScore / 4) % 2) === 0 ? basePositions : [basePositions[1], basePositions[0]];
     }
   }
 
