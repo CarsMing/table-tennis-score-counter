@@ -33,6 +33,14 @@ export class ScoreboardComponent implements AfterViewInit {
     this.gameService.incrementTeamBScore();
   }
 
+  decrementTeamAScore() {
+    this.gameService.decrementTeamAScore();
+  }
+
+  decrementTeamBScore() {
+    this.gameService.decrementTeamBScore();
+  }
+
   resetAllScores() {
     this.gameService.resetAllScores();
   }

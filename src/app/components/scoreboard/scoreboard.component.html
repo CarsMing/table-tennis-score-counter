@@ -3,7 +3,10 @@
     <div class="team-name">Team A</div>
     
     <div class="team-score">{{ gameService.teamAScore }}</div>
-    <button class="increment-button" (click)="incrementTeamAScore()">+</button>
+    <div class="score-controls">
+      <button class="decrement-button" (click)="decrementTeamAScore()">-</button>
+      <button class="increment-button" (click)="incrementTeamAScore()">+</button>
+    </div>
     
     <div class="player-list">
       <div class="player-title">Players</div>
@@ -18,6 +21,7 @@
           #playerNameInput
         >
         <button class="edit-button" (click)="editPlayerName(player)" *ngIf="!player.editing">Edit</button>
+        <span class="serving-indicator" *ngIf="gameService.isPlayerServing('A', i+1)">🔄</span>
       </div>
     </div>
   </div>
@@ -25,7 +29,10 @@
   <div class="team-box team-2">
     <div class="team-name">Team B</div>
     <div class="team-score">{{ gameService.teamBScore }}</div>
-    <button class="increment-button" (click)="incrementTeamBScore()">+</button>
+    <div class="score-controls">
+      <button class="decrement-button" (click)="decrementTeamBScore()">-</button>
+      <button class="increment-button" (click)="incrementTeamBScore()">+</button>
+    </div>
     <div class="player-list">
       <div class="player-title">Players</div>
       <div class="player-name" *ngFor="let player of gameService.teamBPlayers; let i = index">
@@ -39,10 +46,18 @@
           #playerNameInput
         >
         <button class="edit-button" (click)="editPlayerName(player)" *ngIf="!player.editing">Edit</button>
+        <span class="serving-indicator" *ngIf="gameService.isPlayerServing('B', i+1)">🔄</span>
       </div>
     </div>
   </div>
 </div>
+
+<div class="game-info">
+  <div class="positioning-info">
+    {{ gameService.positioningInfo }}
+  </div>
+</div>
+
 <div class="controls">
   <button class="reset-button reset-all" (click)="resetAllScores()">Reset All Scores</button>
   <div class="game-status" [class.game-over]="gameService.isGameOver">

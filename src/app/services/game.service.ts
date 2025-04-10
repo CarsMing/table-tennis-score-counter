@@ -30,20 +30,7 @@ export class GameService {
   private isGameOverSource = new BehaviorSubject<boolean>(false);
   private gameWinnerSource = new BehaviorSubject<string>('');
   private isDeuceModeSource = new BehaviorSubject<boolean>(false);
-  private gameStatusSource = new BehaviorSubject<string>('Game in progress. Player 1 from Team A is serving.');
-  
-  // Serving mechanics
-  private currentServingTeamSource = new BehaviorSubject<string>('A');
-  private currentServingPlayerSource = new BehaviorSubject<number>(1);
-  private serveCountSource = new BehaviorSubject<number>(0);
-  
-  // Keep track of which player served last for each team
-  private teamALastServerSource = new BehaviorSubject<number>(1);
-  private teamBLastServerSource = new BehaviorSubject<number>(1);
-  
-  // Player positions for the illustration
-  private teamAPositionsSource = new BehaviorSubject<string[]>(['top', 'bottom']);
-  private teamBPositionsSource = new BehaviorSubject<string[]>(['top', 'bottom']);
+  private gameStatusSource = new BehaviorSubject<string>('Game in progress.');
 
   // Observable streams
   teamAScore$ = this.teamAScoreSource.asObservable();
@@ -54,13 +41,15 @@ export class GameService {
   gameWinner$ = this.gameWinnerSource.asObservable();
   isDeuceMode$ = this.isDeuceModeSource.asObservable();
   gameStatus$ = this.gameStatusSource.asObservable();
-  currentServingTeam$ = this.currentServingTeamSource.asObservable();
-  currentServingPlayer$ = this.currentServingPlayerSource.asObservable();
-  serveCount$ = this.serveCountSource.asObservable();
-  teamAPositions$ = this.teamAPositionsSource.asObservable();
-  teamBPositions$ = this.teamBPositionsSource.asObservable();
 
-  constructor() { }
+  constructor() {
+    // Update game status initially
+    this.updateGameStatus();
+    
+    // Subscribe to score changes to update game status
+    this.teamAScore$.subscribe(() => this.updateGameStatus());
+    this.teamBScore$.subscribe(() => this.updateGameStatus());
+  }
 
   // Getter methods for current values
   get teamAScore(): number {
@@ -95,32 +84,79 @@ export class GameService {
     return this.gameStatusSource.value;
   }
 
+  // Calculate current serving team based on total score
   get currentServingTeam(): string {
-    return this.currentServingTeamSource.value;
+    const totalScore = this.teamAScore + this.teamBScore;
+    
+    // In deuce mode (both scores >= 10), service alternates every point
+    if (this.isDeuceMode) {
+      return totalScore % 2 === 0 ? 'A' : 'B';
+    }
+    
+    // Normal play: service alternates every 2 points
+    return Math.floor(totalScore / 2) % 2 === 0 ? 'A' : 'B';
   }
 
+  // Calculate current serving player based on total score
   get currentServingPlayer(): number {
-    return this.currentServingPlayerSource.value;
+    const totalScore = this.teamAScore + this.teamBScore;
+    
+    if (this.isDeuceMode) {
+      // In deuce mode, service alternates between teams each point
+      // But the same player serves when their team gets to serve
+      if (this.currentServingTeam === 'A') {
+        return this.teamAScore % 2 === 0 ? 2 : 1;
+      } else {
+        return this.teamBScore % 2 === 0 ? 2 : 1;
+      }
+    } else {
+      // In regular play, players alternate every 2 points
+        return Math.floor(totalScore / 4) % 2 === 0 ? 1 : 2;
+    }
   }
 
-  get serveCount(): number {
-    return this.serveCountSource.value;
-  }
-
+  // Get positions of team A players based on total score
   get teamAPositions(): string[] {
-    return this.teamAPositionsSource.value;
+    const totalScore = this.teamAScore + this.teamBScore;
+    // Positions switch after each service change, which happens every 2 points in regular play
+    // and every point in deuce mode
+    
+    // Starting positions
+    const basePositions = ['top', 'bottom'];
+    
+    // Calculate if positions are swapped
+    if (this.isDeuceMode) {
+      // In deuce, positions switch with every team change, which is every point
+      return (Math.floor(totalScore / 1) % 4) < 2 ? basePositions : [basePositions[1], basePositions[0]];
+    } else {
+      // In regular play, positions switch with each service change (every 2 points)
+      return (Math.floor(totalScore / 2) % 2) === 0 ? basePositions : [basePositions[1], basePositions[0]];
+    }
   }
 
+  // Get positions of team B players based on total score
   get teamBPositions(): string[] {
-    return this.teamBPositionsSource.value;
+    const totalScore = this.teamAScore + this.teamBScore;
+    // Positions switch after each service change, which happens every 2 points in regular play
+    // and every point in deuce mode
+    
+    // Starting positions
+    const basePositions = ['top', 'bottom'];
+    
+    // Calculate if positions are swapped
+    if (this.isDeuceMode) {
+      // In deuce, positions switch with every team change, which is every point
+      return (Math.floor(totalScore / 1) % 4) < 2 ? basePositions : [basePositions[1], basePositions[0]];
+    } else {
+      // In regular play, positions switch with each service change (every 2 points)
+      return (Math.floor(totalScore / 2) % 2) === 0 ? basePositions : [basePositions[1], basePositions[0]];
+    }
   }
 
-  get teamALastServer(): number {
-    return this.teamALastServerSource.value;
-  }
-
-  get teamBLastServer(): number {
-    return this.teamBLastServerSource.value;
+  // Calculate serving count before switch (0 or 1 for regular play)
+  get serveCount(): number {
+    const totalScore = this.teamAScore + this.teamBScore;
+    return this.isDeuceMode ? 0 : totalScore % 2;
   }
 
   // Action methods
@@ -128,95 +164,44 @@ export class GameService {
     if (this.isGameOver) return;
     
     this.teamAScoreSource.next(this.teamAScore + 1);
-    this.updateGameState('A');
+    this.checkDeuce();
+    this.checkGameEnd();
   }
 
   incrementTeamBScore() {
     if (this.isGameOver) return;
     
     this.teamBScoreSource.next(this.teamBScore + 1);
-    this.updateGameState('B');
-  }
-  
-  updateGameState(teamScored: string) {
-    // Check if we're in deuce mode
-    if (this.teamAScore >= 10 && this.teamBScore >= 10) {
-      this.isDeuceModeSource.next(true);
-    }
-    
-    // Store the previous serving team to check if it changed
-    const previousServingTeam = this.currentServingTeam;
-    
-    // Update the server based on rules
-    this.updateServer();
-    
-    // If the serving team changed, switch positions for the team that is now receiving
-    if (previousServingTeam !== this.currentServingTeam) {
-      // The team that now receives the serve should switch positions
-      const receivingTeam = this.currentServingTeam === 'A' ? 'B' : 'A';
-      this.switchPositionsForTeam(receivingTeam);
-    }
-    
-    // Check for game win conditions
+    this.checkDeuce();
     this.checkGameEnd();
+  }
+  
+  decrementTeamAScore() {
+    if (this.isGameOver) return;
     
-    // Update game status message
-    this.updateGameStatus();
-  }
-  
-  updateServer() {
-    // In deuce mode, serve changes after each point
-    if (this.isDeuceMode) {
-      this.switchServer();
-      return;
-    }
+    // Don't allow negative scores
+    if (this.teamAScore <= 0) return;
     
-    // Regular mode: serve changes after 2 points
-    this.serveCountSource.next(this.serveCount + 1);
-    if (this.serveCount >= 2) {
-      this.switchServer();
-      this.serveCountSource.next(0);
-    }
+    this.teamAScoreSource.next(this.teamAScore - 1);
+    this.checkDeuce();
+    this.checkGameEnd();
+  }
+
+  decrementTeamBScore() {
+    if (this.isGameOver) return;
+    
+    // Don't allow negative scores
+    if (this.teamBScore <= 0) return;
+    
+    this.teamBScoreSource.next(this.teamBScore - 1);
+    this.checkDeuce();
+    this.checkGameEnd();
   }
   
-  switchServer() {
-    // Save the current server before switching
-    if (this.currentServingTeam === 'A') {
-      this.teamALastServerSource.next(this.currentServingPlayer);
-      
-      // Switch to team B
-      this.currentServingTeamSource.next('B');
-      
-      // Get next server for team B
-      const nextServerB = this.teamBLastServer === 1 ? 2 : 1;
-      this.currentServingPlayerSource.next(nextServerB);
-      this.teamBLastServerSource.next(nextServerB);
-    } else {
-      this.teamBLastServerSource.next(this.currentServingPlayer);
-      
-      // Switch to team A
-      this.currentServingTeamSource.next('A');
-      
-      // Get next server for team A
-      const nextServerA = this.teamALastServer === 1 ? 2 : 1;
-      this.currentServingPlayerSource.next(nextServerA);
-      this.teamALastServerSource.next(nextServerA);
-    }
-  }
-  
-  // Switch positions of players within a team
-  switchPositionsForTeam(team: string) {
-    if (team === 'A') {
-      // Swap positions for Team A players
-      const newPositions = [...this.teamAPositions];
-      [newPositions[0], newPositions[1]] = [newPositions[1], newPositions[0]];
-      this.teamAPositionsSource.next(newPositions);
-    } else {
-      // Swap positions for Team B players
-      const newPositions = [...this.teamBPositions];
-      [newPositions[0], newPositions[1]] = [newPositions[1], newPositions[0]];
-      this.teamBPositionsSource.next(newPositions);
-    }
+  checkDeuce() {
+    // Check if we're in deuce mode
+    const isDeuceMode = this.teamAScore >= 10 && this.teamBScore >= 10;
+    this.isDeuceModeSource.next(isDeuceMode);
   }
   
   // Get the position class for a player
@@ -287,16 +272,6 @@ export class GameService {
     this.isGameOverSource.next(false);
     this.gameWinnerSource.next('');
     this.isDeuceModeSource.next(false);
-    this.currentServingTeamSource.next('A');
-    this.currentServingPlayerSource.next(1);
-    this.serveCountSource.next(0);
-    
-    // Reset last servers
-    this.teamALastServerSource.next(1);
-    this.teamBLastServerSource.next(1);
-   
-    this.teamAPositionsSource.next(['top', 'bottom']);
-    this.teamBPositionsSource.next(['top', 'bottom']);
     this.updateGameStatus();
   }
 
@@ -321,6 +296,15 @@ export class GameService {
     this.teamBPlayersSource.next([...this.teamBPlayers]);
   }
 
+  // Get positioning information
+  get positioningInfo(): string {
+    const totalScore = this.teamAScore + this.teamBScore;
+    const teamAPos = this.teamAPositions;
+    const teamBPos = this.teamBPositions;
+    
+    return `Positions: Team A (${teamAPos[0]}/${teamAPos[1]}) - Team B (${teamBPos[0]}/${teamBPos[1]})`;
+  }
+  
   // Extract initials from a player name
   getInitials(name: string): string {
     if (!name) return '';
