@@ -52,12 +52,6 @@
   </div>
 </div>
 
-<div class="game-info">
-  <div class="positioning-info">
-    {{ gameService.positioningInfo }}
-  </div>
-</div>
-
 <div class="controls">
   <button class="reset-button reset-all" (click)="resetAllScores()">Reset All Scores</button>
   <div class="game-status" [class.game-over]="gameService.isGameOver">

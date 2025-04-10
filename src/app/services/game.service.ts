@@ -105,8 +105,7 @@ export class GameService {
     const totalScore = this.teamAScore + this.teamBScore;
     
     if (this.isDeuceMode) {
-      // In deuce mode, service alternates between teams each point
-      
+      // In deuce mode, service alternates between players within each team each point
         return Math.floor(totalScore / 2) % 2 === 0 ? 2 : 1;
       
     } else {
@@ -123,9 +122,6 @@ export class GameService {
     // Calculate if positions are swapped
     if (this.isDeuceMode) {
       // In deuce, positions switch with every team change, which is every point
-      console.log('deuce mode - team A');
-      console.log(totalScore);
-      console.log(Math.floor((totalScore)) % 4);
       return (Math.floor(totalScore + 1) % 4) >= 2 ? basePositions : [basePositions[1], basePositions[0]];
     } else {
       // In regular play, positions switch with each service change (every 2 points)

@@ -2,20 +2,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 3rem;
-  margin-bottom: 2rem;
+  margin: 2rem auto;
+  width: 100%;
+  max-width: 600px;
 }
 
 .table-illustration {
   position: relative;
-  width: 400px;
-  height: 300px;
+  width: 100%;
+  height: 0;
+  padding-bottom: 60%; /* Maintain aspect ratio */
+  top: -30px;
 }
 
 .table {
   position: absolute;
-  width: 300px;
-  height: 180px;
+  width: 60%;
+  height: 60%;
   background-color: #66b3ff;
   border: 4px solid white;
   border-radius: 10px;
@@ -27,7 +30,7 @@
 .net {
   position: absolute;
   width: 2px;
-  height: 180px;
+  height: 60%;
   background-color: white;
   top: 50%;
   left: 50%;
@@ -50,12 +53,24 @@
 
 .serving {
   transform: scale(1.2);
-  box-shadow: 0 0 10px 3px rgba(255, 215, 0, 0.7);
+  animation: pulse 0.5s infinite;
+  box-shadow: 0 0 10px 3px rgba(0, 47, 255, 0.7);
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 5px 1px rgba(0, 47, 255, 0.7);
+    }
+    50% {
+      box-shadow: 0 0 10px 2px rgba(0, 47, 255, 0.7); 
+    }
+    100% {
+      box-shadow: 0 0 15px 3px rgba(0, 47, 255, 0.7);
+    }
+  }
   z-index: 10;
 }
 
 .team-a-player {
-  left: 10px;
+  left: 5%;
 }
 
 .team-a-player-1 {
@@ -67,7 +82,7 @@
 }
 
 .team-b-player {
-  right: 10px;
+  right: 5%;
 }
 
 .team-b-player-1 {
@@ -79,11 +94,11 @@
 }
 
 .top {
-  top: 100px;
+  top: 33%;
 }
 
 .bottom {
-  top: 160px;
+  top: 53%;
 }
 
 .table-illustration-title {
@@ -91,4 +106,42 @@
   font-weight: bold;
   margin-bottom: 1rem;
   color: #333;
+  text-align: center;
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+  .table-tennis-container {
+
+    max-width: 450px;
+  }
+}
+
+@media (max-width: 576px) {
+  .table-tennis-container {
+    margin: 1rem auto;
+    max-width: 100%;
+  }
+  
+  .player-marker {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+  
+  .top {
+    top: 30%;
+  }
+  
+  .bottom {
+    top: 55%;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-marker {
+    width: 30px;
+    height: 30px;
+    font-size: 0.8rem;
+  }
 }
