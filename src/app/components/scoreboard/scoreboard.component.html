@@ -20,8 +20,8 @@
           (keyup.enter)="savePlayerName(player)"
           #playerNameInput
         >
-        <button class="edit-button" (click)="editPlayerName(player)" *ngIf="!player.editing">Edit</button>
         <span class="serving-indicator" *ngIf="gameService.isPlayerServing('A', i+1)">🔄</span>
+        <button class="edit-button" (click)="editPlayerName(player)" *ngIf="!player.editing">Edit</button>
       </div>
     </div>
   </div>
@@ -45,8 +45,9 @@
           (keyup.enter)="savePlayerName(player)"
           #playerNameInput
         >
-        <button class="edit-button" (click)="editPlayerName(player)" *ngIf="!player.editing">Edit</button>
         <span class="serving-indicator" *ngIf="gameService.isPlayerServing('B', i+1)">🔄</span>
+
+        <button class="edit-button" (click)="editPlayerName(player)" *ngIf="!player.editing">Edit</button>
       </div>
     </div>
   </div>
