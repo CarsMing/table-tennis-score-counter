@@ -1,21 +1,21 @@
 <div class="scoreboard">
   <div class="team-box team-1">
-    <div class="team-name">Team A</div>
-    
+    <div class="team-name">Team 1</div>
+
     <div class="team-score">{{ gameService.teamAScore }}</div>
     <div class="score-controls">
       <button class="decrement-button" (click)="decrementTeamAScore()">-</button>
       <button class="increment-button" (click)="incrementTeamAScore()">+</button>
     </div>
-    
+
     <div class="player-list">
       <div class="player-title">Players</div>
       <div class="player-name" *ngFor="let player of gameService.teamAPlayers; let i = index">
         <span *ngIf="!player.editing" (click)="editPlayerName(player)">{{ player.name }}</span>
-        <input 
-          *ngIf="player.editing" 
-          type="text" 
-          [(ngModel)]="player.editName" 
+        <input
+          *ngIf="player.editing"
+          type="text"
+          [(ngModel)]="player.editName"
           (blur)="savePlayerName(player)"
           (keyup.enter)="savePlayerName(player)"
           #playerNameInput
@@ -25,9 +25,9 @@
       </div>
     </div>
   </div>
-  
+
   <div class="team-box team-2">
-    <div class="team-name">Team B</div>
+    <div class="team-name">Team 2</div>
     <div class="team-score">{{ gameService.teamBScore }}</div>
     <div class="score-controls">
       <button class="decrement-button" (click)="decrementTeamBScore()">-</button>
@@ -37,10 +37,10 @@
       <div class="player-title">Players</div>
       <div class="player-name" *ngFor="let player of gameService.teamBPlayers; let i = index">
         <span *ngIf="!player.editing" (click)="editPlayerName(player)">{{ player.name }}</span>
-        <input 
-          *ngIf="player.editing" 
-          type="text" 
-          [(ngModel)]="player.editName" 
+        <input
+          *ngIf="player.editing"
+          type="text"
+          [(ngModel)]="player.editName"
           (blur)="savePlayerName(player)"
           (keyup.enter)="savePlayerName(player)"
           #playerNameInput
